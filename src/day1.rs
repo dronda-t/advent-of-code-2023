@@ -18,8 +18,8 @@ pub fn pt_2(input: Vec<&str>) -> u32 {
             }
         }).collect::<Vec<u32>>();
 
-        let first = values.first().unwrap().clone();
-        let last = values.last().unwrap().clone();
+        let first = values.first().unwrap();
+        let last = values.last().unwrap();
         format!("{}{}", first, last).parse::<u32>().unwrap()
     }).sum()
 }

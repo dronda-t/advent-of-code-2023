@@ -8,29 +8,31 @@ struct Game {
 }
 
 fn parse_game(line: &str) -> Game {
-    let mut id_and_game = line.splitn(2, ' ')
-        .last()
-        .unwrap()
-        .splitn(2, ':');
+    let (id, game_str) = line.split_once(' ')
+        .unwrap().1
+        .split_once(':')
+        .unwrap();
 
-    let id = id_and_game.next().expect("no next").parse::<u32>().expect("failed to parse");
+    let id = id.parse::<u32>().expect("failed to parse");
 
     let mut game = Game {
-        id: id,
+        id,
         red: 0,
         green: 0,
         blue: 0
     };
 
-    let rounds: Vec<_> = id_and_game.last().unwrap().split(';').collect();
+    let rounds: Vec<_> = game_str.split(';').collect();
     for round in rounds {
         let colors: Vec<_> = round.split(',').collect();
         for quant_and_color in colors {
-            let vec = quant_and_color.split(' ').collect::<Vec<_>>();
-            let mut quant_and_color_iter = vec.iter();
-            quant_and_color_iter.next();
-            let quantity = quant_and_color_iter.next().unwrap().parse::<u32>().unwrap();
-            match quant_and_color_iter.next().unwrap().to_owned() {
+            let quant_and_color = quant_and_color.strip_prefix(' ').unwrap()
+                .split(' ')
+                .collect::<Vec<_>>();
+
+            let mut quant_and_color = quant_and_color.iter();
+            let quantity = quant_and_color.next().unwrap().parse::<u32>().unwrap();
+            match quant_and_color.next().unwrap().to_owned() {
                 "red" => { if quantity > game.red { game.red = quantity } }
                 "green" => { if quantity > game.green { game.green = quantity } }
                 "blue" => { if quantity > game.blue { game.blue = quantity } }
@@ -39,7 +41,7 @@ fn parse_game(line: &str) -> Game {
         }
     }
 
-    return game;
+    game
 }
 
 pub fn part_1(input: Vec<&str>) -> u32 {
